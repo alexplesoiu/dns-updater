@@ -1,3 +1,17 @@
+"""
+DNS Updater
+Author: Alexandru-Ioan Plesoiu
+GitHub: https://github.com/alexplesoiu
+Documentation: https://github.com/alexplesoiu/dns-updater
+
+DNS Updater is a Python-based tool that automatically updates Cloudflare DNS records
+with your public IP address. If your server's IP address changes frequently or you
+have a dynamic IP, this tool ensures that your domains and subdomains always point
+to the correct server. It can handle multiple domains and subdomains from multiple
+zones, with proxying enabled or disabled. The tool runs checks and updates every
+5 minutes and includes redundancy for IP checking services.
+"""
+
 import requests
 import schedule
 import time

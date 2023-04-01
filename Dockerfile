@@ -5,10 +5,10 @@ FROM python:3.11-slim
 WORKDIR /app
 
 # Copy the script into the container
-COPY update_dns.py /app
+COPY main.py /app
 
 # Install the required libraries
 RUN pip install --no-cache-dir requests schedule
 
 # Run the script
-CMD ["python", "update_dns.py"]
+CMD ["python", "main.py"]

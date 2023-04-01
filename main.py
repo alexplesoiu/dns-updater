@@ -16,6 +16,8 @@ import requests
 import schedule
 import time
 import socket
+import logging
+import sys
 
 # Replace with your actual data
 API_KEY = 'your_cloudflare_api_key'
@@ -50,6 +52,34 @@ DOMAINS_TO_UPDATE = [
         'proxied': True
     }
 ]
+
+
+def create_logger(level=logging.INFO):
+    """ Create the logger object """
+    logger = logging.getLogger("MGE-Logs")
+
+    # Create handlers
+    console_handler = logging.StreamHandler(sys.stdout)
+    file_handler = logging.FileHandler('dns_updater.log')
+
+    console_handler.setLevel(level)
+    file_handler.setLevel(logging.WARNING)
+
+    # Create formatters and add it to handlers
+    logger_format = logging.Formatter('%(asctime)s | %(filename)s | %(levelname)s | %(message)s')
+    file_format = logging.Formatter('%(asctime)s | %(filename)s(%(lineno)d) | %(levelname)s | %(message)s')
+
+
+    file_handler.setFormatter(file_format)
+    console_handler.setFormatter(logger_format)
+
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+    logger.setLevel(level)
+
+    return logger
+
+LOGGER = create_logger()
 
 
 # Get current DNS record for the specified domain
@@ -92,9 +122,9 @@ def update_dns_record(record_id, zone_id, name, record_type, content, ttl=120, p
     response = requests.put(f'{BASE_URL}zones/{zone_id}/dns_records/{record_id}', json=data, headers=headers)
 
     if response.status_code == 200:
-        print(f"DNS record updated successfully: {name} ({record_type}) -> {content}")
+        LOGGER.info(f"DNS record updated successfully: {name} ({record_type}) -> {content}")
     else:
-        print(f"Failed to update DNS record: {response.json()}")
+        LOGGER.error(f"Failed to update DNS record: {response.json()}")
 
 
 # Get public IP address from the list of IP checking services
@@ -123,7 +153,7 @@ def is_connected():
 # Function to run the check and update process
 def check_and_update_dns():
     if not is_connected():
-        print("No internet connection. Skipping check and update.")
+        LOGGER.error("No internet connection. Skipping check and update.")
         return
 
     public_ip = get_public_ip()
@@ -147,12 +177,12 @@ def check_and_update_dns():
                         proxied=proxied
                     )
                 else:
-                    print(f"IP addresses are the same for {domain_name}. No update needed.")
+                    LOGGER.info(f"IP addresses are the same for {domain_name}. No update needed.")
             else:
                 # TODO: Add more logs, this error could also appear if the API Login fails
-                print(f"DNS record for {domain_name} not found.")
+                LOGGER.error(f"DNS record for {domain_name} not found.")
     else:
-        print("Failed to retrieve public IP. Skipping check and update.")
+        LOGGER.error("Failed to retrieve public IP. Skipping check and update.")
 
 
 # Schedule the check and update process to run every 5 minutes

@@ -77,3 +77,8 @@ docker run -d --name dns-updater --restart unless-stopped dns-updater
 ```
 
 This will run the container in detached mode and ensure it starts automatically when the server restarts, unless you explicitly stop it.
+
+## Tutorial
+[Here](https://blog.devgenius.io/dns-updater-a-solution-for-managing-dynamic-ips-with-cloudflare-31be2f85d9fb) is a guide that shows you how to get the API Keys on cloudflare and how to set up this tool.
+
+https://blog.devgenius.io/dns-updater-a-solution-for-managing-dynamic-ips-with-cloudflare-31be2f85d9fb
